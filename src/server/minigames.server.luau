@@ -1,5 +1,8 @@
 local Players = game:GetService("Players")
-local playerManager = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared").playerManager)
+local sharedFolder = game:GetService("ReplicatedStorage"):WaitForChild("Shared")
+local playerManager = require(sharedFolder.playerManager)
+local timerModule = require(sharedFolder.timer)
+local mapModule = require(script.Parent.mapModule)
 
 local function createSpawns(map: Model)
 	local Positions = {}
@@ -22,9 +25,21 @@ local function getRandomTableIndex(tbl)
 	return generator:NextInteger(1, #tbl)
 end
 
+--[[ Map Data Example
+
+["Example Map"] = {
+    ["Name"] = "Example",
+    ["mapObject"] = mapFolder[1],
+    ["mapBehaviorFunction"] = nil, 
+    ["mapTime"] = 120
+}
+
+]]--
+
 function loadMap(mapIndex, activePlayers)
-	local maps = game:GetService("ServerStorage"):WaitForChild("Maps"):GetChildren()
-	local selectedMapModelClone = maps[mapIndex]:Clone()
+	local maps = mapModule.maps
+	local selectedMapModelClone = maps[mapIndex]["mapObject"]:Clone()
+	-- here
 	selectedMapModelClone.Parent = workspace
 	local spawnPositionTable = createSpawns(selectedMapModelClone)
 
@@ -33,15 +48,17 @@ function loadMap(mapIndex, activePlayers)
 		print(plrObj)
 		local Player = Players:GetPlayerByUserId(plrObj.id)
 		plrObj:changeStatus()
-		plrObj:startClientTimer(5)
+		plrObj:startClientTimer(10)
 		local character = Player.Character
 		local randomPosition = spawnPositionTable[getRandomTableIndex(spawnPositionTable)]
 		character.HumanoidRootPart.Position = randomPosition
 	end
 end
-
+-- TODO: 
+-- Create module for seperate levels
 local function main()
 	local activePlayers = playerManager.getActivePlayers()
+	local serverTimerObject = timerModule.new(10) -- could add a callback 
 	loadMap(1, activePlayers)
 end
 
