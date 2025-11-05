@@ -4,7 +4,7 @@ local timerGui = plrGui:WaitForChild("Timer")
 local RS = game:GetService("ReplicatedStorage")
 local runService = game:GetService("RunService")
 local timeEvent = RS:WaitForChild("timeEvent")
-local timeModule = require(RS:WaitForChild("Shared").timer)
+local timeModule = require(RS:WaitForChild("Shared").utilities.timer)
 
 timeEvent.onClientEvent:Connect(function(time)
 	local timer = timeModule.new(time)
