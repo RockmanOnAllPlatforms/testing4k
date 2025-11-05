@@ -1,3 +1,6 @@
+local Players = game:GetService("Players")
+local playerManager = require(game:GetService("ReplicatedStorage"):WaitForChild("Shared").playerManager)
+
 local function createSpawns(map: Model)
 	local Positions = {}
 	local spawnsFolder = map:FindFirstChild("Spawns")
@@ -26,15 +29,19 @@ function loadMap(mapIndex, activePlayers)
 	local spawnPositionTable = createSpawns(selectedMapModelClone)
 
 	-- spawn players into the map
-	for _, v in pairs(activePlayers) do
-		local character = v.Character
+	for _, plrObj in pairs(activePlayers) do
+		print(plrObj)
+		local Player = Players:GetPlayerByUserId(plrObj.id)
+		plrObj:changeStatus()
+		plrObj:startClientTimer(5)
+		local character = Player.Character
 		local randomPosition = spawnPositionTable[getRandomTableIndex(spawnPositionTable)]
 		character.HumanoidRootPart.Position = randomPosition
 	end
 end
 
 local function main()
-	local activePlayers = game:GetService("Players"):GetPlayers()
+	local activePlayers = playerManager.getActivePlayers()
 	loadMap(1, activePlayers)
 end
 
