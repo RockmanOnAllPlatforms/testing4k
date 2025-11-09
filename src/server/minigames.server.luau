@@ -34,10 +34,11 @@ end
     ["mapTime"] = 120
 }
 
-]]--
+]]
+--
 
 function loadMap(mapIndex, activePlayers)
-	local maps = mapModule.maps
+	local maps = mapModule
 	local selectedMap = maps[mapIndex]
 	local selectedMapModelClone = selectedMap["mapObject"]:Clone()
 	-- here
@@ -55,12 +56,20 @@ function loadMap(mapIndex, activePlayers)
 		character.HumanoidRootPart.Position = randomPosition
 	end
 end
--- TODO: 
+-- TODO:
 -- Create module for seperate levels
 local function main()
 	local activePlayers = playerManager.getActivePlayers()
-	local serverTimerObject = timerModule.new(120) -- could add a callback 
-	loadMap(1, activePlayers)
+	local serverTimerObject = timerModule.new(120) -- could add a callback
+	serverTimerObject:start()
+	task.spawn(function()
+		while serverTimerObject.remaining > 0 do
+			serverTimerObject:update(1)
+			print(serverTimerObject:getFormatted())
+			task.wait(1)
+		end
+	end)
+	loadMap(math.random(1, 2), activePlayers)
 end
 
 task.wait(2)
